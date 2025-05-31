@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Shield, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,11 +10,44 @@ const Home: React.FC = () => {
   const featuredCars = cars.filter(car => car.isFeatured).slice(0, 6);
   const newCars = cars.filter(car => car.isNew).slice(0, 4);
 
+  // Background images for hero section
+  const backgroundImages = [
+    'https://images.unsplash.com/photo-1563720223185-11003d516935?w=1920&h=1080&fit=crop', // Mercedes luxury car
+    'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1920&h=1080&fit=crop', // Luxury sports car
+    'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1920&h=1080&fit=crop'  // Premium BMW
+  ];
+
+  const [currentBgIndex, setCurrentBgIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBgIndex((prevIndex) => (prevIndex + 1) % backgroundImages.length);
+    }, 5000); // Change background every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [backgroundImages.length]);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center bg-hero-pattern overflow-hidden">
-        <div className="absolute inset-0 bg-luxury-gradient opacity-80"></div>
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Images */}
+        {backgroundImages.map((image, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${
+              index === currentBgIndex ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{
+              backgroundImage: `url(${image})`,
+            }}
+          />
+        ))}
+        
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="absolute inset-0 bg-luxury-gradient opacity-40"></div>
+        
         <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
             Luxury Cars
@@ -34,6 +67,21 @@ const Home: React.FC = () => {
               Watch Video
             </Button>
           </div>
+        </div>
+        
+        {/* Background Image Indicators */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+          {backgroundImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentBgIndex(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                index === currentBgIndex 
+                  ? 'bg-luxury-gold scale-125' 
+                  : 'bg-white/50 hover:bg-white/75'
+              }`}
+            />
+          ))}
         </div>
         
         {/* Floating Elements */}
